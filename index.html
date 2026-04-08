@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Meal Plan — Heart Smart</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4F0EA;
+    --white: #FFFFFF;
+    --green: #1E5C3A;
+    --green-2: #2D7A52;
+    --green-mid: #48A078;
+    --green-light: #D4EDE0;
+    --green-pale: #EAF6EE;
+    --gold: #B07D2E;
+    --gold-light: #FDF3DC;
+    --rose: #A93226;
+    --rose-light: #FAECEB;
+    --slate: #2C3340;
+    --gray: #6B7280;
+    --gray-light: #E8E4DC;
+    --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
+    --shadow: 0 4px 24px rgba(0,0,0,0.09);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.13);
+    --radius: 14px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--slate);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--green);
+    padding: 2.5rem 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content:'';
+    position:absolute; top:-80px; right:-80px;
+    width:280px; height:280px; border-radius:50%;
+    background:rgba(255,255,255,0.04);
+  }
+  .header-inner { max-width:860px; margin:0 auto; }
+  .eyebrow {
+    font-size:0.65rem; letter-spacing:0.25em; text-transform:uppercase;
+    color:var(--green-mid); margin-bottom:0.4rem;
+  }
+  header h1 {
+    font-family:'Lora',serif; font-size:clamp(1.7rem,4vw,2.4rem);
+    font-weight:700; color:white; line-height:1.2; margin-bottom:0.5rem;
+  }
+  header h1 em { font-style:italic; color:var(--green-mid); }
+  .header-meta {
+    display:flex; flex-wrap:wrap; gap:0.5rem;
+    margin-bottom:1.5rem;
+  }
+  .meta-pill {
+    background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18);
+    color:rgba(255,255,255,0.85); font-size:0.72rem; font-weight:500;
+    padding:0.22rem 0.75rem; border-radius:20px;
+  }
+
+  /* ── TABS ── */
+  .tabs {
+    display:flex; gap:0;
+    border-bottom:none;
+    position:relative;
+  }
+  .tab-btn {
+    background:rgba(255,255,255,0.1);
+    color:rgba(255,255,255,0.6);
+    border:none; cursor:pointer;
+    font-family:'DM Sans',sans-serif;
+    font-size:0.82rem; font-weight:600;
+    padding:0.75rem 1.3rem;
+    border-radius:10px 10px 0 0;
+    transition:all 0.2s;
+    letter-spacing:0.01em;
+    margin-right:3px;
+  }
+  .tab-btn:hover { background:rgba(255,255,255,0.15); color:white; }
+  .tab-btn.active {
+    background:var(--bg);
+    color:var(--green);
+  }
+
+  /* ── MAIN ── */
+  main { max-width:860px; margin:0 auto; padding:1.8rem 1.2rem 5rem; }
+
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* ── SECTION TITLES ── */
+  .section-title {
+    font-family:'Lora',serif; font-size:1.25rem; font-weight:700;
+    color:var(--green); margin:2rem 0 0.9rem;
+    display:flex; align-items:center; gap:0.5rem;
+    padding-bottom:0.4rem; border-bottom:2px solid var(--green-light);
+  }
+
+  /* ── STRATEGY BANNER ── */
+  .strategy {
+    background:var(--gold-light); border-left:4px solid var(--gold);
+    border-radius:var(--radius); padding:1.1rem 1.3rem; margin-bottom:1.5rem;
+  }
+  .strategy h3 { font-family:'Lora',serif; font-size:0.95rem; color:var(--gold); margin-bottom:0.35rem; }
+  .strategy p { font-size:0.85rem; color:#5C4010; line-height:1.6; }
+  .strategy p+p { margin-top:0.35rem; }
+
+  /* ── MEAL CARDS ── */
+  .meal-card {
+    background:var(--white); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm); margin-bottom:0.9rem; overflow:hidden;
+    transition:box-shadow 0.2s;
+  }
+  .meal-card:hover { box-shadow:var(--shadow); }
+
+  .meal-header {
+    background:var(--green-2); color:white;
+    padding:0.7rem 1.2rem;
+    display:flex; align-items:center; justify-content:space-between; gap:0.5rem;
+  }
+  .meal-title { font-family:'Lora',serif; font-size:0.98rem; font-weight:700; }
+  .time-pill {
+    background:var(--green-mid); color:white;
+    font-size:0.63rem; font-weight:600; letter-spacing:0.06em;
+    padding:0.2rem 0.65rem; border-radius:20px; white-space:nowrap; flex-shrink:0;
+  }
+
+  .meal-body {
+    display:grid; grid-template-columns:1fr 1fr 1fr; gap:0;
+  }
+  @media(max-width:560px){ .meal-body { grid-template-columns:1fr; } }
+
+  .meal-col {
+    padding:0.9rem 1rem;
+    border-right:1px solid var(--gray-light);
+  }
+  .meal-col:last-child { border-right:none; }
+
+  .col-label {
+    font-size:0.6rem; font-weight:600; letter-spacing:0.14em;
+    text-transform:uppercase; margin-bottom:0.3rem;
+  }
+  .col-label.adults { color:var(--green-2); }
+  .col-label.kids { color:var(--gold); }
+  .col-label.serve { color:var(--gray); }
+
+  .meal-col p { font-size:0.84rem; line-height:1.5; }
+  .meal-tip { font-size:0.73rem; color:var(--gray); font-style:italic; margin-top:0.3rem; }
+
+  .meal-footer {
+    padding:0.6rem 1rem; border-top:1px solid var(--gray-light);
+    display:flex; flex-wrap:wrap; gap:0.3rem; align-items:center;
+  }
+  .f-label { font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--gray); }
+  .f-chip {
+    background:var(--green-pale); color:var(--green);
+    font-size:0.75rem; font-weight:500; padding:0.18rem 0.6rem; border-radius:20px;
+  }
+
+  /* ── SIMPLE GRID (breakfast/lunch) ── */
+  .simple-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+    gap:0.8rem; margin-bottom:1.5rem;
+  }
+  .simple-card {
+    background:var(--white); border-radius:var(--radius);
+    padding:1rem 1.1rem; box-shadow:var(--shadow-sm);
+    border-top:3px solid var(--green-mid);
+  }
+  .simple-card h4 { font-family:'Lora',serif; font-size:0.93rem; font-weight:700; color:var(--green); margin-bottom:0.28rem; }
+  .simple-card p { font-size:0.83rem; line-height:1.45; }
+  .simple-card .tip { font-size:0.73rem; color:var(--gray); font-style:italic; margin-top:0.25rem; }
+
+  /* ── RECIPES TAB ── */
+  .recipe-card {
+    background:var(--white); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm); margin-bottom:1rem; overflow:hidden;
+  }
+  .recipe-header {
+    background:var(--green); color:white;
+    padding:0.8rem 1.2rem;
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer; user-select:none;
+  }
+  .recipe-header h3 { font-family:'Lora',serif; font-size:1rem; font-weight:700; }
+  .recipe-header .r-meta { display:flex; gap:0.5rem; align-items:center; flex-shrink:0; }
+  .r-pill { background:rgba(255,255,255,0.15); color:white; font-size:0.63rem; font-weight:600; padding:0.18rem 0.6rem; border-radius:20px; }
+  .chevron { font-size:0.75rem; transition:transform 0.25s; }
+  .recipe-header.open .chevron { transform:rotate(180deg); }
+
+  .recipe-body { display:none; padding:1.2rem; }
+  .recipe-body.open { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+  @media(max-width:540px){ .recipe-body.open { grid-template-columns:1fr; } }
+
+  .recipe-section h4 { font-family:'Lora',serif; font-size:0.88rem; font-weight:700; color:var(--green); margin-bottom:0.5rem; }
+  .recipe-section ul, .recipe-section ol { padding-left:1.1rem; }
+  .recipe-section li { font-size:0.83rem; line-height:1.6; margin-bottom:0.15rem; }
+  .recipe-note {
+    grid-column:1/-1; background:var(--gold-light);
+    border-left:3px solid var(--gold); border-radius:8px;
+    padding:0.7rem 0.9rem; font-size:0.8rem; color:#5C4010; line-height:1.5;
+  }
+  .recipe-note strong { color:var(--gold); }
+
+  /* ── GROCERY TAB ── */
+  .grocery-wrapper {
+    background:var(--white); border-radius:var(--radius);
+    box-shadow:var(--shadow-sm); overflow:hidden;
+  }
+  .grocery-header {
+    background:var(--green); color:white;
+    padding:1rem 1.3rem;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .grocery-header h3 { font-family:'Lora',serif; font-size:1rem; font-weight:700; }
+  .print-btn {
+    background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25);
+    color:white; font-family:'DM Sans',sans-serif; font-size:0.75rem;
+    font-weight:600; padding:0.3rem 0.8rem; border-radius:20px;
+    cursor:pointer; transition:background 0.2s;
+  }
+  .print-btn:hover { background:rgba(255,255,255,0.25); }
+
+  .grocery-body { padding:1.3rem; }
+  .g-cat { font-family:'Lora',serif; font-size:0.95rem; font-weight:700; color:var(--green); margin:1.1rem 0 0.5rem; }
+  .g-cat:first-child { margin-top:0; }
+  .g-items { display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:0.2rem; }
+  .g-chip { font-size:0.8rem; font-weight:500; padding:0.25rem 0.7rem; border-radius:20px; display:flex; align-items:center; gap:0.3rem; }
+  .g-chip input[type=checkbox] { width:13px; height:13px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+  .g-chip.veg { background:var(--green-light); color:var(--green); }
+  .g-chip.prot { background:#E8EAF6; color:#3949AB; }
+  .g-chip.pantry { background:#FFF3CD; color:#7A5000; }
+  .g-chip.dairy { background:#FCE4EC; color:#880E4F; }
+  .g-chip.kids { background:#F3E5F5; color:#6A1B9A; }
+
+  .g-divider { border:none; border-top:2px dashed var(--gray-light); margin:1.2rem 0 0.5rem; }
+
+  .reset-btn {
+    margin-top:1.2rem; background:none; border:1.5px solid var(--gray-light);
+    color:var(--gray); font-family:'DM Sans',sans-serif; font-size:0.78rem;
+    font-weight:500; padding:0.4rem 1rem; border-radius:20px; cursor:pointer;
+    transition:all 0.2s;
+  }
+  .reset-btn:hover { border-color:var(--green); color:var(--green); }
+
+  /* ── TIPS ── */
+  .tips-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:0.8rem; margin:0.8rem 0 1.5rem; }
+  .tip-card {
+    background:var(--white); border-radius:var(--radius);
+    padding:1rem 1.1rem; box-shadow:var(--shadow-sm); border-left:4px solid var(--gold);
+  }
+  .tip-card h4 { font-family:'Lora',serif; font-size:0.9rem; font-weight:700; margin-bottom:0.25rem; }
+  .tip-card p { font-size:0.81rem; color:var(--gray); line-height:1.5; }
+
+  /* ── DISCLAIMER ── */
+  .disclaimer {
+    background:var(--rose-light); border-left:4px solid var(--rose);
+    border-radius:10px; padding:0.9rem 1.1rem;
+    font-size:0.8rem; color:var(--rose); margin-top:2rem; line-height:1.5;
+  }
+  .disclaimer strong { display:block; margin-bottom:0.2rem; }
+
+  @media print {
+    header, .tabs, .tab-btn, .print-btn, .reset-btn { display:none !important; }
+    .tab-panel { display:block !important; }
+    body { background:white; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="eyebrow">Family Meal Plan · Heart Smart</div>
+    <h1>Cory & Jessica's<br><em>Blood Pressure Meal Plan</em></h1>
+    <div class="header-meta">
+      <span class="meta-pill">⏱ 15 min or less</span>
+      <span class="meta-pill">👨‍👩‍👧‍👦 2 adults + 2 kids</span>
+      <span class="meta-pill">🚫 No fish · No mushrooms</span>
+      <span class="meta-pill">💰 Budget-friendly</span>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('plan',this)">🗓 Meal Plan</button>
+      <button class="tab-btn" onclick="showTab('recipes',this)">📋 Recipes</button>
+      <button class="tab-btn" onclick="showTab('grocery',this)">🛒 Grocery List</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══════════════ MEAL PLAN TAB ═══════════════ -->
+  <div id="tab-plan" class="tab-panel active">
+
+    <div class="strategy">
+      <h3>🧠 The Game Plan</h3>
+      <p><strong>One kitchen, two plates, 15 minutes.</strong> Each dinner shares a base with what the kids eat. You and Jessica eat the heart-healthy version — the kids get buttered noodles or plain chicken from the same cook. No separate meals, no extra pots.</p>
+      <p>Quantities below are sized for <strong>2 adults eating the full adult meal</strong>. Kids eat their own thing alongside. Groceries for both are in the Grocery List tab.</p>
+    </div>
+
+    <h2 class="section-title">🍽 Weeknight Dinners</h2>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <span class="meal-title">Garlic Chicken Pasta</span>
+        <span class="time-pill">⏱ 12 min</span>
+      </div>
+      <div class="meal-body">
+        <div class="meal-col">
+          <div class="col-label adults">Cory & Jessica</div>
+          <p>Whole wheat pasta tossed with olive oil, garlic, spinach & sliced chicken breast. Squeeze of lemon on top.</p>
+          <div class="meal-tip">Season with black pepper & oregano — no salt needed</div>
+        </div>
+        <div class="meal-col">
+          <div class="col-label kids">Kids</div>
+          <p>Same pasta pulled out before the garlic & spinach go in. Toss with butter. Done.</p>
+          <div class="meal-tip">Split the pasta in the pot before saucing</div>
+        </div>
+        <div class="meal-col">
+          <div class="col-label serve">Adult Serves</div>
+          <p>12 oz whole wheat pasta<br>1.5 lbs chicken breast<br>4 garlic cloves<br>3 tbsp olive oil<br>3 big handfuls spinach</p>
+        </div>
+      </div>
+      <div class="meal-footer">
+        <span class="f-label">Need:</span>
+        <span class="f-chip">Whole wheat pasta</span>
+        <span class="f-chip">Chicken breast</span>
+        <span class="f-chip">Garlic</span>
+        <span class="f-chip">Spinach</span>
+        <span class="f-chip">Olive oil</span>
+        <span class="f-chip">Lemon</span>
+      </div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <span class="meal-title">Turkey Taco Bowls</span>
+        <span class="time-pill">⏱ 15 min</span>
+      </div>
+      <div class="meal-body">
+        <div class="meal-col">
+          <div class="col-label adults">Cory & Jessica</div>
+          <p>Brown rice, seasoned ground turkey, black beans, tomato, avocado & Greek yogurt (instead of sour cream).</p>
+          <div class="meal-tip">Season turkey with cumin, garlic powder, paprika — skip taco seasoning packets (sodium)</div>
+        </div>
+        <div class="meal-col">
+          <div class="col-label kids">Kids</div>
+          <p>Plain rice + mild turkey on the side. Skip the beans & avocado. Add shredded cheese if they want.</p>
+        </div>
+        <div class="meal-col">
+          <div class="col-label serve">Adult Serves</div>
+          <p>1.5 lbs ground turkey<br>2 cups brown rice (dry)<br>1 can black beans<br>2 avocados<br>1 large tomato</p>
+        </div>
+      </div>
+      <div class="meal-footer">
+        <span class="f-label">Need:</span>
+        <span class="f-chip">Ground turkey</span>
+        <span class="f-chip">Brown rice (instant OK)</span>
+        <span class="f-chip">Black beans</span>
+        <span class="f-chip">Avocado</span>
+        <span class="f-chip">Tomato</span>
+        <span class="f-chip">Greek yogurt</span>
+      </div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <span class="meal-title">Sheet Pan Chicken & Veggies</span>
+        <span class="time-pill">⏱ 10 min prep + oven</span>
+      </div>
+      <div class="meal-body">
+        <div class="meal-col">
+          <div class="col-label adults">Cory & Jessica</div>
+          <p>Chicken breast with broccoli, carrots & sweet potato. Olive oil, garlic powder, oregano. Roast at 400° — oven does the work.</p>
+          <div class="meal-tip">Hands-off after 10 min of prep</div>
+        </div>
+        <div class="meal-col">
+          <div class="col-label kids">Kids</div>
+          <p>Frozen chicken nuggets on a second sheet pan in the same oven. Mac & cheese on the stovetop while it all cooks.</p>
+          <div class="meal-tip">Same oven, same time</div>
+        </div>
+        <div class="meal-col">
+          <div class="col-label serve">Adult Serves</div>
+          <p>1.5 lbs chicken breast<br>2 cups broccoli florets<br>2 medium carrots<br>1 large sweet potato<br>2 tbsp olive oil</p>
+        </div>
+      </div>
+      <div class="meal-footer">
+        <span class="f-label">Need:</span>
+        <span class="f-chip">Chicken breast</span>
+        <span class="f-chip">Broccoli (frozen OK)</span>
+        <span class="f-chip">Carrots</span>
+        <span class="f-chip">Sweet potato</span>
+        <span class="f-chip">Olive oil</span>
+        <span class="f-chip">Garlic powder</span>
+      </div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <span class="meal-title">Black Bean Quesadillas</span>
+        <span class="time-pill">⏱ 10 min</span>
+      </div>
+      <div class="meal-body">
+        <div class="meal-col">
+          <div class="col-label adults">Cory & Jessica</div>
+          <p>Whole wheat tortillas with black beans, spinach, tomato & low-fat cheese. Pan-fried in olive oil. Top with avocado & Greek yogurt.</p>
+        </div>
+        <div class="meal-col">
+          <div class="col-label kids">Kids</div>
+          <p>Same tortilla, cheese only. Same pan, two minutes apart. Classic kid quesadilla.</p>
+        </div>
+        <div class="meal-col">
+          <div class="col-label serve">Adult Serves</div>
+          <p>4 whole wheat tortillas<br>1 can black beans<br>2 handfuls spinach<br>1 tomato, diced<br>½ cup low-fat cheese<br>2 avocados</p>
+        </div>
+      </div>
+      <div class="meal-footer">
+        <span class="f-label">Need:</span>
+        <span class="f-chip">Whole wheat tortillas</span>
+        <span class="f-chip">Black beans</span>
+        <span class="f-chip">Spinach</span>
+        <span class="f-chip">Low-fat shredded cheese</span>
+        <span class="f-chip">Avocado</span>
+      </div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <span class="meal-title">Chicken Stir-Fry over Rice</span>
+        <span class="time-pill">⏱ 15 min</span>
+      </div>
+      <div class="meal-body">
+        <div class="meal-col">
+          <div class="col-label adults">Cory & Jessica</div>
+          <p>Sliced chicken, broccoli, carrots & bell pepper stir-fried in olive oil with garlic. Brown rice, splash of low-sodium soy sauce.</p>
+        </div>
+        <div class="meal-col">
+          <div class="col-label kids">Kids</div>
+          <p>Plain chicken and rice pulled aside before the veggies go in. Add butter if needed.</p>
+        </div>
+        <div class="meal-col">
+          <div class="col-label serve">Adult Serves</div>
+          <p>1.5 lbs chicken breast<br>2 cups instant brown rice<br>2 cups broccoli<br>2 medium carrots<br>1 bell pepper<br>Low-sodium soy sauce</p>
+        </div>
+      </div>
+      <div class="meal-footer">
+        <span class="f-label">Need:</span>
+        <span class="f-chip">Chicken breast</span>
+        <span class="f-chip">Brown rice</span>
+        <span class="f-chip">Broccoli</span>
+        <span class="f-chip">Carrots</span>
+        <span class="f-chip">Bell pepper</span>
+        <span class="f-chip">Low-sodium soy sauce</span>
+      </div>
+    </div>
+
+    <div class="meal-card">
+      <div class="meal-header">
+        <span class="meal-title">Rotisserie Chicken Night 🏆</span>
+        <span class="time-pill">⏱ 5 min</span>
+      </div>
+      <div class="meal-body">
+        <div class="meal-col">
+          <div class="col-label adults">Cory & Jessica</div>
+          <p>Store-bought rotisserie chicken (skip the skin) over spinach with chickpeas, cucumber, tomato & lemon-olive oil dressing. Zero cooking.</p>
+          <div class="meal-tip">Best exhausted-weeknight move there is</div>
+        </div>
+        <div class="meal-col">
+          <div class="col-label kids">Kids</div>
+          <p>Same rotisserie chicken, plain. Buttered noodles or bread on the side. Also zero cooking.</p>
+        </div>
+        <div class="meal-col">
+          <div class="col-label serve">Adult Serves</div>
+          <p>1 rotisserie chicken<br>4 big handfuls spinach<br>1 can chickpeas<br>1 cucumber<br>Cherry tomatoes<br>Lemon + olive oil</p>
+        </div>
+      </div>
+      <div class="meal-footer">
+        <span class="f-label">Need:</span>
+        <span class="f-chip">Rotisserie chicken</span>
+        <span class="f-chip">Spinach (bag)</span>
+        <span class="f-chip">Chickpeas</span>
+        <span class="f-chip">Cucumber</span>
+        <span class="f-chip">Cherry tomatoes</span>
+        <span class="f-chip">Lemon</span>
+      </div>
+    </div>
+
+    <h2 class="section-title">☀️ Quick Breakfasts</h2>
+    <p style="font-size:0.83rem;color:var(--gray);margin-bottom:0.9rem;">Under 5 minutes or prep-ahead. Kids can eat most of these too.</p>
+    <div class="simple-grid">
+      <div class="simple-card">
+        <h4>Overnight Oats</h4>
+        <p>Oats + almond milk + banana + chia seeds in a jar. Prep Sunday, grab all week.</p>
+        <div class="tip">Make 5 jars at once — done for the week</div>
+      </div>
+      <div class="simple-card">
+        <h4>Greek Yogurt & Berries</h4>
+        <p>Plain Greek yogurt, blueberries (frozen OK), drizzle of honey. 2-minute assembly.</p>
+      </div>
+      <div class="simple-card">
+        <h4>Banana + Almond Butter</h4>
+        <p>One banana, spoonful of unsalted almond butter. Best 90-second breakfast.</p>
+      </div>
+      <div class="simple-card">
+        <h4>Scrambled Eggs & Toast</h4>
+        <p>2–3 eggs, whole grain toast, handful of spinach wilted in the pan. 7 minutes.</p>
+        <div class="tip">Season with garlic powder & black pepper</div>
+      </div>
+      <div class="simple-card">
+        <h4>Blueberry Smoothie</h4>
+        <p>Frozen blueberries, banana, spinach & oat milk blended. 2 minutes — hides the spinach completely.</p>
+      </div>
+      <div class="simple-card">
+        <h4>Oatmeal with Banana</h4>
+        <p>Plain rolled oats (microwave 2 min), sliced banana, walnuts. Filling and fast.</p>
+      </div>
+    </div>
+
+    <h2 class="section-title">🥗 Easy Lunches</h2>
+    <p style="font-size:0.83rem;color:var(--gray);margin-bottom:0.9rem;">Leftovers or no-cook. Nothing that requires actual cooking at noon.</p>
+    <div class="simple-grid">
+      <div class="simple-card">
+        <h4>Leftover Taco Bowl</h4>
+        <p>Make extra turkey & rice at dinner. Lunch is done — just add fresh avocado.</p>
+      </div>
+      <div class="simple-card">
+        <h4>Black Bean Wrap</h4>
+        <p>Tortilla, canned black beans (rinsed), avocado, tomato, Greek yogurt. 3-minute assembly.</p>
+      </div>
+      <div class="simple-card">
+        <h4>Spinach Salad + Chickpeas</h4>
+        <p>Bag spinach, canned chickpeas (rinsed), cherry tomatoes, lemon & olive oil. Zero prep.</p>
+      </div>
+      <div class="simple-card">
+        <h4>Leftover Stir-Fry</h4>
+        <p>Cook slightly more at dinner. Reheats in 2 minutes and tastes better the next day.</p>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚕️ Note</strong>
+      Built around DASH diet principles for blood pressure management — not a substitute for medical advice. Jessica should continue working with her doctor, especially if on medication, as diet changes can affect how medication works.
+    </div>
+
+  </div>
+
+  <!-- ═══════════════ RECIPES TAB ═══════════════ -->
+  <div id="tab-recipes" class="tab-panel">
+    <h2 class="section-title">📋 Dinner Recipes</h2>
+    <p style="font-size:0.83rem;color:var(--gray);margin-bottom:1.2rem;">Tap any recipe to expand. All sized for 2 adults. Kids' portions are separate.</p>
+
+    <!-- Recipe 1 -->
+    <div class="recipe-card">
+      <div class="recipe-header" onclick="toggleRecipe(this)">
+        <h3>Garlic Chicken Pasta</h3>
+        <div class="r-meta">
+          <span class="r-pill">⏱ 12 min</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section">
+          <h4>Ingredients (2 adults)</h4>
+          <ul>
+            <li>12 oz whole wheat pasta</li>
+            <li>1.5 lbs chicken breast, sliced thin</li>
+            <li>4 garlic cloves, minced</li>
+            <li>3 tbsp olive oil</li>
+            <li>3 large handfuls baby spinach</li>
+            <li>1 lemon, juiced</li>
+            <li>Black pepper & oregano to taste</li>
+          </ul>
+        </div>
+        <div class="recipe-section">
+          <h4>Steps</h4>
+          <ol>
+            <li>Boil pasta per package. Before draining, scoop out kids' portion and toss with butter. Set aside.</li>
+            <li>While pasta cooks, heat 1 tbsp olive oil in a pan over medium-high. Cook chicken 3–4 min per side until done. Slice.</li>
+            <li>In the same pan, add 2 tbsp olive oil and garlic. Cook 60 seconds.</li>
+            <li>Add drained pasta and spinach to the pan. Toss until spinach wilts (1 min).</li>
+            <li>Add chicken back in. Squeeze lemon over everything. Plate and serve.</li>
+          </ol>
+        </div>
+        <div class="recipe-note"><strong>Sodium tip:</strong> Skip the salt entirely. Garlic + lemon + olive oil provides all the flavor you need. Taste before you reach for the shaker.</div>
+      </div>
+    </div>
+
+    <!-- Recipe 2 -->
+    <div class="recipe-card">
+      <div class="recipe-header" onclick="toggleRecipe(this)">
+        <h3>Turkey Taco Bowls</h3>
+        <div class="r-meta">
+          <span class="r-pill">⏱ 15 min</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section">
+          <h4>Ingredients (2 adults)</h4>
+          <ul>
+            <li>1.5 lbs ground turkey</li>
+            <li>2 cups instant brown rice</li>
+            <li>1 can black beans, drained & rinsed</li>
+            <li>2 avocados, diced</li>
+            <li>1 large tomato, diced</li>
+            <li>Plain Greek yogurt (instead of sour cream)</li>
+            <li>1 tsp cumin, 1 tsp garlic powder, 1 tsp paprika</li>
+          </ul>
+        </div>
+        <div class="recipe-section">
+          <h4>Steps</h4>
+          <ol>
+            <li>Cook instant brown rice per package (usually 90 seconds microwave).</li>
+            <li>Brown turkey in a pan over medium-high heat, breaking it up, 6–7 min.</li>
+            <li>Add cumin, garlic powder, and paprika. Stir to coat. Cook 1 more min.</li>
+            <li>Pull out plain turkey + rice for kids before next steps.</li>
+            <li>Warm the rinsed black beans briefly in the same pan.</li>
+            <li>Build bowls: rice, turkey, beans, tomato, avocado. Top with Greek yogurt.</li>
+          </ol>
+        </div>
+        <div class="recipe-note"><strong>Skip the packet:</strong> Store-bought taco seasoning packets can have 300–400mg sodium per serving. The homemade spice mix above has zero.</div>
+      </div>
+    </div>
+
+    <!-- Recipe 3 -->
+    <div class="recipe-card">
+      <div class="recipe-header" onclick="toggleRecipe(this)">
+        <h3>Sheet Pan Chicken & Veggies</h3>
+        <div class="r-meta">
+          <span class="r-pill">⏱ 10 min prep</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section">
+          <h4>Ingredients (2 adults)</h4>
+          <ul>
+            <li>1.5 lbs chicken breast</li>
+            <li>2 cups broccoli florets (frozen OK)</li>
+            <li>2 medium carrots, sliced</li>
+            <li>1 large sweet potato, cubed</li>
+            <li>2 tbsp olive oil</li>
+            <li>1 tsp garlic powder</li>
+            <li>1 tsp oregano or Italian seasoning</li>
+            <li>Black pepper to taste</li>
+          </ul>
+        </div>
+        <div class="recipe-section">
+          <h4>Steps</h4>
+          <ol>
+            <li>Preheat oven to 400°F.</li>
+            <li>On a sheet pan, toss veggies and chicken with olive oil, garlic powder, oregano, and pepper.</li>
+            <li>Spread everything out in a single layer.</li>
+            <li>Roast 22–25 min until chicken is cooked through and edges are golden.</li>
+            <li>On a second pan: kids' nuggets go in at the same time. Mac & cheese on stovetop.</li>
+          </ol>
+        </div>
+        <div class="recipe-note"><strong>Hands-off dinner:</strong> 10 minutes to prep, then the oven handles it. Perfect night to help with homework or just decompress.</div>
+      </div>
+    </div>
+
+    <!-- Recipe 4 -->
+    <div class="recipe-card">
+      <div class="recipe-header" onclick="toggleRecipe(this)">
+        <h3>Black Bean Quesadillas</h3>
+        <div class="r-meta">
+          <span class="r-pill">⏱ 10 min</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section">
+          <h4>Ingredients (2 adults)</h4>
+          <ul>
+            <li>4 whole wheat tortillas</li>
+            <li>1 can black beans, drained & rinsed</li>
+            <li>2 big handfuls spinach</li>
+            <li>1 tomato, diced</li>
+            <li>½ cup low-fat shredded cheese</li>
+            <li>2 avocados</li>
+            <li>Plain Greek yogurt</li>
+            <li>Olive oil for the pan</li>
+          </ul>
+        </div>
+        <div class="recipe-section">
+          <h4>Steps</h4>
+          <ol>
+            <li>Make kids' cheese quesadillas first (plain tortilla + cheese, 2 min per side). Set aside.</li>
+            <li>Layer beans, spinach, tomato & cheese on one tortilla. Fold in half.</li>
+            <li>Cook in a little olive oil over medium heat, 2–3 min per side until golden.</li>
+            <li>Slice and serve topped with diced avocado and a dollop of Greek yogurt.</li>
+          </ol>
+        </div>
+        <div class="recipe-note"><strong>Rinse those beans:</strong> Running canned black beans under cold water for 10 seconds removes a significant portion of the added sodium. Worth the 10 seconds.</div>
+      </div>
+    </div>
+
+    <!-- Recipe 5 -->
+    <div class="recipe-card">
+      <div class="recipe-header" onclick="toggleRecipe(this)">
+        <h3>Chicken Stir-Fry over Rice</h3>
+        <div class="r-meta">
+          <span class="r-pill">⏱ 15 min</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="recipe-body">
+        <div class="recipe-section">
+          <h4>Ingredients (2 adults)</h4>
+          <ul>
+            <li>1.5 lbs chicken breast, sliced thin</li>
+            <li>2 cups instant brown rice</li>
+            <li>2 cups broccoli florets</li>
+            <li>2 medium carrots, sliced thin</li>
+            <li>1 bell pepper, sliced</li>
+            <li>3 garlic cloves, minced</li>
+            <li>2 tbsp olive oil</li>
+            <li>1–2 tbsp low-sodium soy sauce</li>
+          </ul>
+        </div>
+        <div class="recipe-section">
+          <h4>Steps</h4>
+          <ol>
+            <li>Cook instant brown rice (microwave bag, 90 sec).</li>
+            <li>Heat oil in a large pan or wok over high heat. Cook chicken 4–5 min until done. Pull out kids' portion now.</li>
+            <li>Add garlic to the pan — 30 seconds.</li>
+            <li>Add broccoli, carrots, bell pepper. Stir-fry 4–5 min until tender-crisp.</li>
+            <li>Add chicken back in. Drizzle with low-sodium soy sauce. Toss and serve over rice.</li>
+          </ol>
+        </div>
+        <div class="recipe-note"><strong>Make extra:</strong> This reheats perfectly. Double the adult portion and tomorrow's lunch is already handled.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════ GROCERY TAB ═══════════════ -->
+  <div id="tab-grocery" class="tab-panel">
+    <h2 class="section-title">🛒 Weekly Grocery List</h2>
+    <p style="font-size:0.83rem;color:var(--gray);margin-bottom:1rem;">Check off as you shop. Covers all 6 dinners + breakfasts + lunches for 2 adults. Kids' extras at the bottom.</p>
+
+    <div class="grocery-wrapper">
+      <div class="grocery-header">
+        <h3>Full Weekly List — 2 Adults + 2 Kids</h3>
+        <button class="print-btn" onclick="window.print()">🖨 Print</button>
+      </div>
+      <div class="grocery-body">
+
+        <div class="g-cat">🥬 Produce</div>
+        <div class="g-items" id="grocery-items">
+          <label class="g-chip veg"><input type="checkbox"> Bananas (bunch)</label>
+          <label class="g-chip veg"><input type="checkbox"> Blueberries (fresh or frozen bag)</label>
+          <label class="g-chip veg"><input type="checkbox"> Spinach (large bag)</label>
+          <label class="g-chip veg"><input type="checkbox"> Broccoli (frozen bag)</label>
+          <label class="g-chip veg"><input type="checkbox"> Carrots (bag)</label>
+          <label class="g-chip veg"><input type="checkbox"> Sweet potato (2 large)</label>
+          <label class="g-chip veg"><input type="checkbox"> Cherry tomatoes</label>
+          <label class="g-chip veg"><input type="checkbox"> Tomatoes (2 large)</label>
+          <label class="g-chip veg"><input type="checkbox"> Bell pepper (2)</label>
+          <label class="g-chip veg"><input type="checkbox"> Cucumber (1)</label>
+          <label class="g-chip veg"><input type="checkbox"> Avocados (5–6)</label>
+          <label class="g-chip veg"><input type="checkbox"> Lemons (2–3)</label>
+          <label class="g-chip veg"><input type="checkbox"> Garlic (1 bulb)</label>
+        </div>
+
+        <div class="g-cat">🍗 Proteins</div>
+        <div class="g-items">
+          <label class="g-chip prot"><input type="checkbox"> Chicken breast (3–4 lbs)</label>
+          <label class="g-chip prot"><input type="checkbox"> Ground turkey (1.5 lbs)</label>
+          <label class="g-chip prot"><input type="checkbox"> Eggs (1 dozen)</label>
+          <label class="g-chip prot"><input type="checkbox"> Rotisserie chicken (1, week's easy night)</label>
+        </div>
+
+        <div class="g-cat">🫙 Pantry</div>
+        <div class="g-items">
+          <label class="g-chip pantry"><input type="checkbox"> Whole wheat pasta (1 box)</label>
+          <label class="g-chip pantry"><input type="checkbox"> Whole wheat tortillas</label>
+          <label class="g-chip pantry"><input type="checkbox"> Instant brown rice (pouches)</label>
+          <label class="g-chip pantry"><input type="checkbox"> Rolled oats (large container)</label>
+          <label class="g-chip pantry"><input type="checkbox"> Whole grain bread (loaf)</label>
+          <label class="g-chip pantry"><input type="checkbox"> Canned black beans (3 cans)</label>
+          <label class="g-chip pantry"><input type="checkbox"> Canned chickpeas (2 cans)</label>
+          <label class="g-chip pantry"><input type="checkbox"> Olive oil</label>
+          <label class="g-chip pantry"><input type="checkbox"> Garlic powder</label>
+          <label class="g-chip pantry"><input type="checkbox"> Cumin & paprika</label>
+          <label class="g-chip pantry"><input type="checkbox"> Oregano / Italian seasoning</label>
+          <label class="g-chip pantry"><input type="checkbox"> Low-sodium soy sauce</label>
+          <label class="g-chip pantry"><input type="checkbox"> Chia seeds</label>
+          <label class="g-chip pantry"><input type="checkbox"> Unsalted almond butter</label>
+          <label class="g-chip pantry"><input type="checkbox"> Unsalted walnuts or almonds</label>
+          <label class="g-chip pantry"><input type="checkbox"> Honey</label>
+        </div>
+
+        <div class="g-cat">🥛 Dairy & Fridge</div>
+        <div class="g-items">
+          <label class="g-chip dairy"><input type="checkbox"> Plain Greek yogurt (large tub)</label>
+          <label class="g-chip dairy"><input type="checkbox"> Oat milk or almond milk (unsweetened)</label>
+          <label class="g-chip dairy"><input type="checkbox"> Low-fat shredded cheese</label>
+        </div>
+
+        <hr class="g-divider">
+
+        <div class="g-cat">🧒 Kids' Extras</div>
+        <div class="g-items">
+          <label class="g-chip kids"><input type="checkbox"> Regular pasta (buttered noodles)</label>
+          <label class="g-chip kids"><input type="checkbox"> Mac & cheese boxes (2–3)</label>
+          <label class="g-chip kids"><input type="checkbox"> Frozen chicken nuggets</label>
+          <label class="g-chip kids"><input type="checkbox"> Butter</label>
+          <label class="g-chip kids"><input type="checkbox"> Shredded cheese (for tacos/quesadillas)</label>
+        </div>
+
+        <button class="reset-btn" onclick="resetList()">↺ Uncheck all</button>
+      </div>
+    </div>
+
+    <div class="tips-grid" style="margin-top:1.5rem;">
+      <div class="tip-card">
+        <h4>💰 Keep It Cheap</h4>
+        <p>The most expensive items are the proteins. Buying chicken breast in a family pack and freezing half cuts the weekly cost significantly.</p>
+      </div>
+      <div class="tip-card">
+        <h4>🫘 Rinsing Canned Beans</h4>
+        <p>Takes 10 seconds and removes a big chunk of the sodium. Always rinse before using.</p>
+      </div>
+      <div class="tip-card">
+        <h4>🥶 Frozen Veg = Smart</h4>
+        <p>Frozen broccoli and spinach last all week, cost less, and are nutritionally identical to fresh.</p>
+      </div>
+      <div class="tip-card">
+        <h4>🍗 Rotisserie = Free Night Off</h4>
+        <p>Keep one as a backup every week. On a rough night it's dinner in 5 minutes with zero cooking.</p>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  function showTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function toggleRecipe(header) {
+    const body = header.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.recipe-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.recipe-header').forEach(h => h.classList.remove('open'));
+    // Open clicked if it was closed
+    if (!isOpen) {
+      body.classList.add('open');
+      header.classList.add('open');
+    }
+  }
+
+  function resetList() {
+    document.querySelectorAll('.grocery-wrapper input[type=checkbox]').forEach(cb => cb.checked = false);
+  }
+
+  // Save checkbox state to sessionStorage
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox') {
+      const checkboxes = document.querySelectorAll('.grocery-wrapper input[type=checkbox]');
+      const state = Array.from(checkboxes).map(cb => cb.checked);
+      sessionStorage.setItem('grocery-checks', JSON.stringify(state));
+    }
+  });
+
+  // Restore on load
+  window.addEventListener('load', function() {
+    const saved = sessionStorage.getItem('grocery-checks');
+    if (saved) {
+      const state = JSON.parse(saved);
+      const checkboxes = document.querySelectorAll('.grocery-wrapper input[type=checkbox]');
+      checkboxes.forEach((cb, i) => { if (state[i]) cb.checked = true; });
+    }
+  });
+</script>
+
+</body>
+</html>
