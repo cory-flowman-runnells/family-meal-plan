@@ -853,6 +853,7 @@
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + id).classList.add('active');
     btn.classList.add('active');
+    localStorage.setItem('active-tab', id);
   }
 
   function toggleRecipe(header) {
@@ -916,6 +917,11 @@
   });
 
   window.addEventListener('load', async function() {
+    const savedTab = localStorage.getItem('active-tab');
+    if (savedTab) {
+      const btn = document.querySelector(`.tab-btn[onclick*="'${savedTab}'"]`);
+      if (btn) showTab(savedTab, btn);
+    }
     const local = localStorage.getItem('grocery-checks');
     if (local) applyCheckboxMap(JSON.parse(local));
     await fetchRemote();
