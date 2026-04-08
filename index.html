@@ -858,38 +858,75 @@
   function toggleRecipe(header) {
     const body = header.nextElementSibling;
     const isOpen = body.classList.contains('open');
-    // Close all
     document.querySelectorAll('.recipe-body').forEach(b => b.classList.remove('open'));
     document.querySelectorAll('.recipe-header').forEach(h => h.classList.remove('open'));
-    // Open clicked if it was closed
     if (!isOpen) {
       body.classList.add('open');
       header.classList.add('open');
     }
   }
 
-  function resetList() {
-    document.querySelectorAll('.grocery-wrapper input[type=checkbox]').forEach(cb => cb.checked = false);
+  // ── GROCERY SYNC ──
+  const SYNC_URL = '/.netlify/functions/grocery-sync';
+
+  function getCheckboxMap() {
+    const map = {};
+    document.querySelectorAll('.grocery-wrapper input[type=checkbox]').forEach(cb => {
+      map[cb.parentElement.textContent.trim()] = cb.checked;
+    });
+    return map;
   }
 
-  // Save checkbox state to sessionStorage
+  function applyCheckboxMap(map) {
+    document.querySelectorAll('.grocery-wrapper input[type=checkbox]').forEach(cb => {
+      const label = cb.parentElement.textContent.trim();
+      if (label in map) cb.checked = map[label];
+    });
+  }
+
+  async function fetchRemote() {
+    try {
+      const res = await fetch(SYNC_URL);
+      if (res.ok) {
+        const map = await res.json();
+        if (Object.keys(map).length > 0) applyCheckboxMap(map);
+      }
+    } catch {}
+  }
+
+  let syncTimer;
+  function pushRemote() {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(async () => {
+      try {
+        await fetch(SYNC_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(getCheckboxMap())
+        });
+      } catch {}
+    }, 500);
+  }
+
   document.addEventListener('change', function(e) {
     if (e.target.type === 'checkbox') {
-      const checkboxes = document.querySelectorAll('.grocery-wrapper input[type=checkbox]');
-      const state = Array.from(checkboxes).map(cb => cb.checked);
-      sessionStorage.setItem('grocery-checks', JSON.stringify(state));
+      localStorage.setItem('grocery-checks', JSON.stringify(getCheckboxMap()));
+      pushRemote();
     }
   });
 
-  // Restore on load
-  window.addEventListener('load', function() {
-    const saved = sessionStorage.getItem('grocery-checks');
-    if (saved) {
-      const state = JSON.parse(saved);
-      const checkboxes = document.querySelectorAll('.grocery-wrapper input[type=checkbox]');
-      checkboxes.forEach((cb, i) => { if (state[i]) cb.checked = true; });
-    }
+  window.addEventListener('load', async function() {
+    const local = localStorage.getItem('grocery-checks');
+    if (local) applyCheckboxMap(JSON.parse(local));
+    await fetchRemote();
+    setInterval(fetchRemote, 30000);
   });
+
+  function resetList() {
+    document.querySelectorAll('.grocery-wrapper input[type=checkbox]').forEach(cb => cb.checked = false);
+    localStorage.removeItem('grocery-checks');
+    pushRemote();
+  }
 </script>
 
 </body>
