@@ -11,7 +11,11 @@ exports.handler = async (event) => {
     return { statusCode: 204, headers };
   }
 
-  const store = getStore("grocery");
+  const store = getStore({
+    name: "grocery",
+    siteID: process.env.NETLIFY_SITE_ID,
+    token: process.env.NETLIFY_ACCESS_TOKEN,
+  });
 
   if (event.httpMethod === "GET") {
     const data = await store.get("checks", { type: "json" }).catch(() => null);
